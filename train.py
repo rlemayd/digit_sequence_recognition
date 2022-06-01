@@ -121,12 +121,12 @@ if __name__ == '__main__' :
             image = image - mean_image
             image = tf.expand_dims(image, 0)        
             pred = model.predict(image)
-            pred = pred[0]
+            pred = np.array(pred[0][0])
             #softmax to estimate probs
-            pred = np.exp(pred - max(pred))
-            pred = pred / np.sum(pred)            
-            cla = np.argmax(pred)
-            print('{} [{}]'.format(cla, pred[cla]))
+            pred = np.exp(np.subtract(pred, np.amax(pred, axis=1)[:,None]))
+            pred = pred / np.sum(pred, axis=1)[:,None]
+            cla = np.argmax(pred, axis=1)
+            print('{} [{}]'.format(cla, pred[np.arange(len(pred)), cla]))
             filename = input('file :')
     
     #save the model   
