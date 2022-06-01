@@ -75,6 +75,7 @@ if __name__ == '__main__' :
         save_freq = 'epoch',            
         )
     model = resnet.RecogNet([3,4,6,3],[32,64,128,256], configuration.get_number_of_classes(), use_bottleneck = False)
+    process_fun = imgproc.process_mnist
     print('Model is Resnet')
     sys.stdout.flush()    
     #build the model indicating the input shape
