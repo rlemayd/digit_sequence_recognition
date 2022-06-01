@@ -17,6 +17,7 @@ from models import resnet
 import datasets.data as data
 import utils.configuration as conf
 import utils.losses as losses
+import utils.imgproc as imgproc
 import numpy as np
 import argparse
 import os
@@ -25,7 +26,7 @@ if __name__ == '__main__' :
     parser = argparse.ArgumentParser(description = "Train a simple mnist model")
     parser.add_argument("-config", type = str, help = "<str> configuration file", required = True)
     parser.add_argument("-name", type=str, help=" name of section in the configuration file", required = True)
-    parser.add_argument("-mode", type=str, choices=['train', 'test'],  help=" train or test", required = False, default = 'train')
+    parser.add_argument("-mode", type=str, choices=['train', 'test', 'predict'],  help=" train or test", required = False, default = 'train')
     parser.add_argument("-save", type= bool,  help=" True to save the model", required = False, default = False)    
     pargs = parser.parse_args()     
     configuration_file = pargs.config
