@@ -26,7 +26,7 @@ if __name__ == '__main__' :
     parser = argparse.ArgumentParser(description = "Train a simple mnist model")
     parser.add_argument("-config", type = str, help = "<str> configuration file", required = True)
     parser.add_argument("-name", type=str, help=" name of section in the configuration file", required = True)
-    parser.add_argument("-mode", type=str, choices=['train', 'test', 'predict'],  help=" train or test", required = False, default = 'train')
+    parser.add_argument("-mode", type=str, choices=['train', 'test', 'predict', 'calc_acc'],  help=" train or test", required = False, default = 'train')
     parser.add_argument("-save", type= bool,  help=" True to save the model", required = False, default = False)    
     pargs = parser.parse_args()     
     configuration_file = pargs.config
@@ -58,11 +58,10 @@ if __name__ == '__main__' :
         tr_dataset = tr_dataset.batch(batch_size = configuration.get_batch_size())    
         
 
-    if pargs.mode == 'train' or  pargs.mode == 'test':
+    if pargs.mode == 'train' or  pargs.mode == 'test' or  pargs.mode == 'calc_acc':
         val_dataset = tf.data.TFRecordDataset(tfr_test_file)
         val_dataset = val_dataset.map(lambda x : data.parser_tfrecord(x, input_shape, mean_image, number_of_classes, with_augmentation = False));    
         val_dataset = val_dataset.batch(batch_size = configuration.get_batch_size())
-                        
         
     #tensorboard_callback = tf.keras.callbacks.TensorBoard(log_dir=configuration.get_snapshot_dir(), histogram_freq=1)
     #Defining callback for saving checkpoints
@@ -128,6 +127,9 @@ if __name__ == '__main__' :
             cla = np.argmax(pred, axis=1)
             print('{} [{}]'.format(cla, pred[np.arange(len(pred)), cla]))
             filename = input('file :')
+
+    elif pargs.mode == 'calc_acc':
+        print(val_dataset)
     
     #save the model   
     if pargs.save :
