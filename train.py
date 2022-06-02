@@ -33,7 +33,7 @@ if __name__ == '__main__' :
     configuration = conf.ConfigurationFile(configuration_file, pargs.name)                   
     if pargs.mode == 'train' :
         tfr_train_file = os.path.join(configuration.get_data_dir(), "train.tfrecords")
-    if pargs.mode == 'train' or  pargs.mode == 'test':    
+    if pargs.mode == 'train' or  pargs.mode == 'test' or  pargs.mode == 'calc_acc':    
         tfr_test_file = os.path.join(configuration.get_data_dir(), "test.tfrecords")
     if configuration.use_multithreads() :
         if pargs.mode == 'train' :
