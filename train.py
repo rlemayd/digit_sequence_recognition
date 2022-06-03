@@ -131,21 +131,22 @@ if __name__ == '__main__' :
     elif pargs.mode == 'calc_acc':
         file_with_paths = open("/content/data/test_acc.txt", 'r')
         acc = 0
-        for i in file_with_paths:
-            vals = i.split()
-            target_size = (configuration.get_image_height(), configuration.get_image_width())
-            image = process_fun(data.read_image(vals[0], configuration.get_number_of_channels()), target_size )
-            image = image - mean_image
-            image = tf.expand_dims(image, 0)
-            pred = model.predict(image)
-            pred = np.array(pred[0][0])
-            #softmax to estimate probs
-            pred = np.exp(np.subtract(pred, np.amax(pred, axis=1)[:,None]))
-            pred = pred / np.sum(pred, axis=1)[:,None]
-            cla = np.argmax(pred, axis=1)
-            if "".join(cla) == vals[1]:
-                acc += 1
-        print("accuracy: ", acc/len(file_with_paths))
+        for j in range(200):
+          i = file_with_paths.readline()
+          vals = i.split()
+          target_size = (configuration.get_image_height(), configuration.get_image_width())
+          image = process_fun(data.read_image(vals[0], configuration.get_number_of_channels()), target_size )
+          image = image - mean_image
+          image = tf.expand_dims(image, 0)
+          pred = model.predict(image)
+          pred = np.array(pred[0][0])
+          #softmax to estimate probs
+          pred = np.exp(np.subtract(pred, np.amax(pred, axis=1)[:,None]))
+          pred = pred / np.sum(pred, axis=1)[:,None]
+          cla = np.argmax(pred, axis=1).tolist()
+          if "".join(str(e) for e in cla) == vals[1]:
+              acc += 1
+        print("accuracy: ", acc/200)
     
     #save the model   
     if pargs.save :
