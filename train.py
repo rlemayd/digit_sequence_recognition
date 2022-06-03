@@ -33,7 +33,7 @@ if __name__ == '__main__' :
     configuration = conf.ConfigurationFile(configuration_file, pargs.name)                   
     if pargs.mode == 'train' :
         tfr_train_file = os.path.join(configuration.get_data_dir(), "train.tfrecords")
-    if pargs.mode == 'train' or  pargs.mode == 'test' or  pargs.mode == 'calc_acc':    
+    if pargs.mode == 'train' or  pargs.mode == 'test':    
         tfr_test_file = os.path.join(configuration.get_data_dir(), "test.tfrecords")
     if configuration.use_multithreads() :
         if pargs.mode == 'train' :
@@ -58,7 +58,7 @@ if __name__ == '__main__' :
         tr_dataset = tr_dataset.batch(batch_size = configuration.get_batch_size())    
         
 
-    if pargs.mode == 'train' or  pargs.mode == 'test' or  pargs.mode == 'calc_acc':
+    if pargs.mode == 'train' or  pargs.mode == 'test':
         val_dataset = tf.data.TFRecordDataset(tfr_test_file)
         val_dataset = val_dataset.map(lambda x : data.parser_tfrecord(x, input_shape, mean_image, number_of_classes, with_augmentation = False));    
         val_dataset = val_dataset.batch(batch_size = configuration.get_batch_size())
@@ -118,7 +118,7 @@ if __name__ == '__main__' :
             target_size = (configuration.get_image_height(), configuration.get_image_width())
             image = process_fun(data.read_image(filename, configuration.get_number_of_channels()), target_size )
             image = image - mean_image
-            image = tf.expand_dims(image, 0)        
+            image = tf.expand_dims(image, 0)
             pred = model.predict(image)
             pred = np.array(pred[0][0])
             #softmax to estimate probs
@@ -129,7 +129,23 @@ if __name__ == '__main__' :
             filename = input('file :')
 
     elif pargs.mode == 'calc_acc':
-        print(val_dataset)
+        file_with_paths = open("/content/data/test_acc.txt", 'r')
+        acc = 0
+        for i in file_with_paths:
+            vals = i.split()
+            target_size = (configuration.get_image_height(), configuration.get_image_width())
+            image = process_fun(data.read_image(vals[0], configuration.get_number_of_channels()), target_size )
+            image = image - mean_image
+            image = tf.expand_dims(image, 0)
+            pred = model.predict(image)
+            pred = np.array(pred[0][0])
+            #softmax to estimate probs
+            pred = np.exp(np.subtract(pred, np.amax(pred, axis=1)[:,None]))
+            pred = pred / np.sum(pred, axis=1)[:,None]
+            cla = np.argmax(pred, axis=1)
+            if "".join(cla) == vals[1]:
+                acc += 1
+        print("accuracy: ", acc/len(file_with_paths))
     
     #save the model   
     if pargs.save :

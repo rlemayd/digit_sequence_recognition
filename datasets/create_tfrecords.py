@@ -19,9 +19,9 @@ if __name__ == '__main__':
     parser.add_argument("-type", type = str, help = "train| test | all",  choices = ['train', 'test', 'all'], required = True )
     parser.add_argument("-config", type = str, help = "<str> configuration file", required = True)
     parser.add_argument("-name", type=str, help=" name of section in the configuration file", required = True)                
-    pargs = parser.parse_args() 
+    pargs = parser.parse_args()
     configuration_file = pargs.config
-    assert os.path.exists(configuration_file), "configuration file does not exist {}".format(configuration_file)   
+    assert os.path.exists(configuration_file), "configuration file does not exist {}".format(configuration_file)
     configuration = conf.ConfigurationFile(configuration_file, pargs.name)
                    
     process_fun = imgproc.process_image
